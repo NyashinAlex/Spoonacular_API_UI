@@ -1,37 +1,12 @@
 package tests;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
 
-//    UserResponseModel responseModel = given()
-//            .spec(userRequestSpec)
-//            .body(body)
-//            .when()
-//            .post()
-//            .then()
-//            .spec(userResponseSpec)
-//            .extract().as(UserResponseModel.class);
-
-//                .filter(withCustomTemplates())
-//            .baseUri("https://reqres.in")
-//            .basePath("/api/users")
-//            .log().all()
-//            .contentType(JSON);
-//
-//            .log(all)
-//            .expectStatusCode(201)
-//            .build();
-
-//step("Проверяем что авторизовались правильно", () -> {
-//        step("Логин `random-user`");
-//        });
-
-//given()
-//        .when()
-//        .get("https://selenoid.autotests.cloud/status")
-//        .then()
-//        .statusCode(200)
-//        .body("total", is(20));
-
+import com.github.javafaker.Faker;
+import io.qameta.allure.Feature;
+import models.GetRecipeInformation.GetRecipeInformationResponseError;
 import models.SearchRecipes.SearchRecipesResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,19 +18,23 @@ import static io.restassured.http.ContentType.JSON;
 
 public class RecipesTests {
 
-    int idRecipe;
-    String titleRecipe;
+    Faker faker = new Faker();
+
+    int idRecipe, idRecipeError = 333333333;
+    String titleRecipe, descriptionRecipe;
+    ArrayList<String> allRecipe;
 
     @Test
+    @Feature("Поиск рецептов")
     @DisplayName("Проверка рандомного рецепта")
     void checkRandomRecipe() {
 
-        step("Получение рандомного рецепта (номер и название)", () -> {
+        step("Получение рандомного рецепта (номер={idRecipe} и название={titleRecipe})", () -> {
             SearchRecipesResponse searchRecipesResponse = given()
                     .log().all()
                     .when()
-                    .header("x-api-key","ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .get("https://api.spoonacular.com/recipes/complexSearch?number=1&offset=100")
+                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .get("https://api.spoonacular.com/recipes/complexSearch?number=1&offset=" + faker.number().numberBetween(1, 5000))
                     .then()
                     .log().body()
                     .statusCode(200)
@@ -70,7 +49,7 @@ public class RecipesTests {
             ArrayList<String> description = given()
                     .log().all()
                     .when()
-                    .header("x-api-key","ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
                     .get("https://api.spoonacular.com/recipes/informationBulk?ids=" + idRecipe)
                     .then()
                     .log().body()
@@ -78,12 +57,71 @@ public class RecipesTests {
                     .contentType(JSON)
                     .extract().path("summary");
 
-            System.out.println(description.get(0));
-            System.out.println(description.get(0).replaceAll("[\\'</b>']", ""));
+            descriptionRecipe = description.get(0).replaceAll("[\\'</b>']", "");
         });
 
         step("Проверка наименования + описание рецепта на сайте", () -> {
+            open("https://spoonacular.com/recipes/-" + idRecipe);
 
+            $("[itemprop=name]").shouldBe(text(titleRecipe));
+//            $("[itemprop=description]").shouldBe(text(descriptionRecipe));
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Ошибка при поиске рецепта - несуществующий id рецепта")
+    void errorCheckWrongRecipe() {
+
+        step("Проверяем, что id рецепта = {idRecipeError} действительно не существует", () -> {
+            GetRecipeInformationResponseError getRecipeInformationResponseError = given()
+                    .log().all()
+                    .when()
+                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .get("https://api.spoonacular.com/recipes/"+ idRecipeError+ "/information")
+                    .then()
+                    .log().body()
+                    .statusCode(404)
+                    .contentType(JSON)
+                    .extract().as(GetRecipeInformationResponseError.class);
+        });
+
+        step("Поиск рецепта по несуществующему id рецепта", () -> {
+            open("https://spoonacular.com/recipes/-" + idRecipeError);
+
+            $(".small-12.medium-12.large-12.column")
+                    .shouldBe(text("Error"))
+                    .shouldBe(text("This recipe does not exist. If you think this is our mistake, please let us know!"));
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Поиск всех рецептов блюда")
+    void searchAllRecipe() {
+
+        step("Поиск всех рецептов блюда", () -> {
+            allRecipe= given()
+                    .log().all()
+                    .when()
+                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .get("https://api.spoonacular.com/recipes/autocomplete?number=25&query=burger")
+                    .then()
+                    .log().body()
+                    .statusCode(200)
+                    .contentType(JSON)
+                    .extract().path("title");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            open("https://spoonacular.com/");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue("burger").pressEnter();
+
+            for(String recipe : allRecipe) {
+                $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
+                        .findBy(text(recipe));
+            }
         });
     }
 }
