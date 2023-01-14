@@ -10,8 +10,9 @@ import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static specs.IngredientsSpec.ingredientsRequestSpec;
+import static specs.IngredientsSpec.ingredientsResponseSpec;
 
 public class IngredientsTests {
 
@@ -31,16 +32,12 @@ public class IngredientsTests {
 
         step("Отправляем запрос с 3 продуктами на проверку гликемической нагрузки", () -> {
             ComputeGlycemicLoadResponse computeGlycemicLoadResponse = given()
-                    .log().all()
-                    .when()
+                    .spec(ingredientsRequestSpec)
                     .body(body)
-                    .contentType(JSON)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .post("https://api.spoonacular.com/food/ingredients/glycemicLoad")
+                    .post("/food/ingredients/glycemicLoad")
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(ingredientsResponseSpec)
                     .extract().as(ComputeGlycemicLoadResponse.class);
 
             step("Проверяем, что запрос успешен и отображается общая сумма гликемической нагрузки", () -> {

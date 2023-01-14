@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
-import static io.restassured.http.ContentType.JSON;
+import static specs.RecipesSpec.*;
 
 public class RecipesTests {
 
@@ -31,14 +31,11 @@ public class RecipesTests {
 
         step("Получение рандомного рецепта (номер={idRecipe} и название={titleRecipe})", () -> {
             SearchRecipesResponse searchRecipesResponse = given()
-                    .log().all()
-                    .when()
+                    .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .get("https://api.spoonacular.com/recipes/complexSearch?number=1&offset=" + faker.number().numberBetween(1, 5000))
+                    .get("/recipes/complexSearch?number=1&offset=" + faker.number().numberBetween(1, 5000))
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(recipesResponseSpec)
                     .extract().as(SearchRecipesResponse.class);
 
             idRecipe = searchRecipesResponse.getResults().get(0).getId();
@@ -47,14 +44,11 @@ public class RecipesTests {
 
         step("Получение описание рандомного рецепта", () -> {
             ArrayList<String> description = given()
-                    .log().all()
-                    .when()
+                    .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .get("https://api.spoonacular.com/recipes/informationBulk?ids=" + idRecipe)
+                    .get("/recipes/informationBulk?ids=" + idRecipe)
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(recipesResponseSpec)
                     .extract().path("summary");
 
             descriptionRecipe = description.get(0).replaceAll("[\\'</b>']", "");
@@ -75,14 +69,11 @@ public class RecipesTests {
 
         step("Проверяем, что id рецепта = {idRecipeError} действительно не существует", () -> {
             GetRecipeInformationResponseError getRecipeInformationResponseError = given()
-                    .log().all()
-                    .when()
+                    .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
                     .get("https://api.spoonacular.com/recipes/"+ idRecipeError+ "/information")
                     .then()
-                    .log().body()
-                    .statusCode(404)
-                    .contentType(JSON)
+                    .spec(recipesResponseErrorSpec)
                     .extract().as(GetRecipeInformationResponseError.class);
         });
 
@@ -102,14 +93,11 @@ public class RecipesTests {
 
         step("Поиск всех рецептов блюда", () -> {
             allRecipe= given()
-                    .log().all()
-                    .when()
+                    .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
                     .get("https://api.spoonacular.com/recipes/autocomplete?number=25&query=burger")
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(recipesResponseSpec)
                     .extract().path("title");
         });
 

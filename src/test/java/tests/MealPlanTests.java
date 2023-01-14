@@ -16,8 +16,9 @@ import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static specs.MealPlanSpec.mealPlanRequestSpec;
+import static specs.MealPlanSpec.mealPlanResponseSpec;
 
 public class MealPlanTests {
 
@@ -47,16 +48,12 @@ public class MealPlanTests {
             connectUserRequest.setEmail(faker.internet().emailAddress());
 
             connectUserResponse = given()
-                    .log().all()
-                    .when()
+                    .spec(mealPlanRequestSpec)
                     .body(connectUserRequest)
-                    .contentType(JSON)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .post("https://api.spoonacular.com/users/connect")
+                    .post("/users/connect")
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(mealPlanResponseSpec)
                     .extract().as(ConnectUserResponse.class);
         });
 
@@ -73,30 +70,24 @@ public class MealPlanTests {
             mealPlanRequest.setValue(value);
 
             mealPlanResponse = given()
-                    .log().all()
-                    .when()
+                    .spec(mealPlanRequestSpec)
                     .body(mealPlanRequest)
-                    .contentType(JSON)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .post("https://api.spoonacular.com/mealplanner/" + connectUserResponse.getUsername() + "/items?hash=" + connectUserResponse.getHash())
+                    .post("/mealplanner/" + connectUserResponse.getUsername() + "/items?hash=" + connectUserResponse.getHash())
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(mealPlanResponseSpec)
                     .extract().as(MealPlanResponse.class);
         });
 
         step("Удаление плана питания для тестового пользователя", () -> {
 
             String status = given()
-                    .log().all()
+                    .spec(mealPlanRequestSpec)
                     .when()
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .delete("https://api.spoonacular.com/mealplanner/"+ connectUserResponse.getUsername() + "/items/"+ mealPlanResponse.getId()+ "?hash="  + connectUserResponse.getHash())
+                    .delete("/mealplanner/"+ connectUserResponse.getUsername() + "/items/"+ mealPlanResponse.getId()+ "?hash="  + connectUserResponse.getHash())
                     .then()
-                    .log().body()
-                    .statusCode(200)
-                    .contentType(JSON)
+                    .spec(mealPlanResponseSpec)
                     .extract().path("status");
 
             assertThat(status).isEqualTo("success");
