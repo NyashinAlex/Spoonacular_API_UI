@@ -102,7 +102,7 @@ public class RecipesTests extends BaseTests {
         });
 
         step("Проверка наличия всех рецептов на сайте", () -> {
-            open("");
+            open("/recipes");
             $(".input__field.input__field--makiko").click();
             $(".input__field.input__field--makiko").setValue("burger").pressEnter();
 
