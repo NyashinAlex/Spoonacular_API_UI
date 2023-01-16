@@ -5,14 +5,23 @@ import com.codeborne.selenide.Selenide;
 import helpers.Attach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 public class BaseTests {
 
     @BeforeAll
     static void openMainPage() {
-        Configuration.browserSize = "1920x1080";
+
+        String browser = System.getProperty("browser", "chrome");
+        String browserVersion = System.getProperty("browser_version", "100.0");
+        String browserSize = System.getProperty("browser_size", "1920x1080");
+        String remote = System.getProperty("remote", "https://user1:1234@selenoid.autotests.cloud/wd/hub");
+
+        Configuration.browser = browser;
+        Configuration.browserVersion = browserVersion;
+        Configuration.browserSize = browserSize;
         Configuration.baseUrl = "https://spoonacular.com";
-        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
+        Configuration.remote = remote;
     }
 
     @AfterEach

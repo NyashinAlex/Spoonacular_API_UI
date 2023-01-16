@@ -31,10 +31,13 @@ public class MealPlanTests {
     Value value = new Value();
     MealPlanResponse mealPlanResponse = new MealPlanResponse();
 
-    @BeforeEach
-    void generateData() {
+    String xApiKey;
 
+    @BeforeEach
+    void getApiKey() {
+        xApiKey = System.getProperty("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394");
     }
+
 
     @Test
     @Feature("Планирование питания")
@@ -50,7 +53,7 @@ public class MealPlanTests {
             connectUserResponse = given()
                     .spec(mealPlanRequestSpec)
                     .body(connectUserRequest)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .post("/users/connect")
                     .then()
                     .spec(mealPlanResponseSpec)
@@ -72,7 +75,7 @@ public class MealPlanTests {
             mealPlanResponse = given()
                     .spec(mealPlanRequestSpec)
                     .body(mealPlanRequest)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .post("/mealplanner/" + connectUserResponse.getUsername() + "/items?hash=" + connectUserResponse.getHash())
                     .then()
                     .spec(mealPlanResponseSpec)
@@ -84,7 +87,7 @@ public class MealPlanTests {
             String status = given()
                     .spec(mealPlanRequestSpec)
                     .when()
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .delete("/mealplanner/"+ connectUserResponse.getUsername() + "/items/"+ mealPlanResponse.getId()+ "?hash="  + connectUserResponse.getHash())
                     .then()
                     .spec(mealPlanResponseSpec)

@@ -8,6 +8,7 @@ import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
 import models.GetRecipeInformation.GetRecipeInformationResponseError;
 import models.SearchRecipes.SearchRecipesResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +22,13 @@ public class RecipesTests extends BaseTests {
     Faker faker = new Faker();
 
     int idRecipe, idRecipeError = 333333333;
-    String titleRecipe, descriptionRecipe;
+    String titleRecipe, descriptionRecipe, xApiKey;
     ArrayList<String> allRecipe;
+
+    @BeforeEach
+    void getApiKey() {
+        xApiKey = System.getProperty("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394");
+    }
 
     @Test
     @Feature("Поиск рецептов")
@@ -32,7 +38,7 @@ public class RecipesTests extends BaseTests {
         step("Получение рандомного рецепта (номер={idRecipe} и название={titleRecipe})", () -> {
             SearchRecipesResponse searchRecipesResponse = given()
                     .spec(recipesRequestSpec)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .get("/recipes/complexSearch?number=1&offset=" + faker.number().numberBetween(1, 5000))
                     .then()
                     .spec(recipesResponseSpec)
@@ -45,7 +51,7 @@ public class RecipesTests extends BaseTests {
         step("Получение описание рандомного рецепта", () -> {
             ArrayList<String> description = given()
                     .spec(recipesRequestSpec)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .get("/recipes/informationBulk?ids=" + idRecipe)
                     .then()
                     .spec(recipesResponseSpec)
@@ -70,7 +76,7 @@ public class RecipesTests extends BaseTests {
         step("Проверяем, что id рецепта = {idRecipeError} действительно не существует", () -> {
             GetRecipeInformationResponseError getRecipeInformationResponseError = given()
                     .spec(recipesRequestSpec)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .get("/recipes/" + idRecipeError + "/information")
                     .then()
                     .spec(recipesResponseErrorSpec)

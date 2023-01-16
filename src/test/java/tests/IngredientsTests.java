@@ -3,6 +3,7 @@ package tests;
 import io.qameta.allure.Feature;
 import models.ComputeGlycemicLoad.ComputeGlycemicLoadRequest;
 import models.ComputeGlycemicLoad.ComputeGlycemicLoadResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +16,12 @@ import static specs.IngredientsSpec.ingredientsRequestSpec;
 import static specs.IngredientsSpec.ingredientsResponseSpec;
 
 public class IngredientsTests {
+
+    String xApiKey;
+    @BeforeEach
+    void getApiKey() {
+        xApiKey = System.getProperty("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394");
+    }
 
     @Test
     @Feature("Ингредиенты")
@@ -34,7 +41,7 @@ public class IngredientsTests {
             ComputeGlycemicLoadResponse computeGlycemicLoadResponse = given()
                     .spec(ingredientsRequestSpec)
                     .body(body)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .post("/food/ingredients/glycemicLoad")
                     .then()
                     .spec(ingredientsResponseSpec)
