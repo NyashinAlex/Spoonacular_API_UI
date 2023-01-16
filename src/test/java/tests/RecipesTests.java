@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import static io.qameta.allure.Allure.step;
 import static specs.RecipesSpec.*;
 
-public class RecipesTests {
+public class RecipesTests extends BaseTests {
 
     Faker faker = new Faker();
 
@@ -55,7 +55,7 @@ public class RecipesTests {
         });
 
         step("Проверка наименования + описание рецепта на сайте", () -> {
-            open("https://spoonacular.com/recipes/-" + idRecipe);
+            open("/recipes/-" + idRecipe);
 
             $("[itemprop=name]").shouldBe(text(titleRecipe));
 //            $("[itemprop=description]").shouldBe(text(descriptionRecipe));
@@ -71,14 +71,14 @@ public class RecipesTests {
             GetRecipeInformationResponseError getRecipeInformationResponseError = given()
                     .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .get("https://api.spoonacular.com/recipes/"+ idRecipeError+ "/information")
+                    .get("/recipes/" + idRecipeError + "/information")
                     .then()
                     .spec(recipesResponseErrorSpec)
                     .extract().as(GetRecipeInformationResponseError.class);
         });
 
         step("Поиск рецепта по несуществующему id рецепта", () -> {
-            open("https://spoonacular.com/recipes/-" + idRecipeError);
+            open("/recipes/-" + idRecipeError);
 
             $(".small-12.medium-12.large-12.column")
                     .shouldBe(text("Error"))
@@ -92,21 +92,21 @@ public class RecipesTests {
     void searchAllRecipe() {
 
         step("Поиск всех рецептов блюда", () -> {
-            allRecipe= given()
+            allRecipe = given()
                     .spec(recipesRequestSpec)
                     .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
-                    .get("https://api.spoonacular.com/recipes/autocomplete?number=25&query=burger")
+                    .get("/recipes/autocomplete?number=25&query=burger")
                     .then()
                     .spec(recipesResponseSpec)
                     .extract().path("title");
         });
 
         step("Проверка наличия всех рецептов на сайте", () -> {
-            open("https://spoonacular.com/");
+            open("");
             $(".input__field.input__field--makiko").click();
             $(".input__field.input__field--makiko").setValue("burger").pressEnter();
 
-            for(String recipe : allRecipe) {
+            for (String recipe : allRecipe) {
                 $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
                         .findBy(text(recipe));
             }
