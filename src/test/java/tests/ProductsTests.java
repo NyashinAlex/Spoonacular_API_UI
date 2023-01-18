@@ -3,12 +3,12 @@ package tests;
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
 import models.Products.ProductsResponse;
-import models.SearchRecipes.SearchRecipesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static specs.ProductsSpec.productsRequestSpec;
@@ -18,7 +18,7 @@ public class ProductsTests extends BaseTests {
 
     Faker faker = new Faker();
 
-    String xApiKey, titleProduct, title, descriptionProduct;
+    String xApiKey, titleProduct, generatedTextProduct;
     int idProduct;
 
     @BeforeEach
@@ -35,23 +35,28 @@ public class ProductsTests extends BaseTests {
             ProductsResponse productsResponse = given()
                     .spec(productsRequestSpec)
                     .header("x-api-key", xApiKey)
-                    .get("/food/products/" + faker.number().numberBetween(1, 50000))
+                    .get("/food/products/" + faker.number().numberBetween(20000, 300000))
                     .then()
                     .spec(productsResponseSpec)
                     .extract().as(ProductsResponse.class);
 
             idProduct = productsResponse.getId();
             titleProduct = productsResponse.getTitle();
-            descriptionProduct = productsResponse.getDescription();
-
-            char[] result = titleProduct.toCharArray();
-            for (int i = 0; i < result.length; i++) {
-                title = result[0] + "-";
-            }
+            generatedTextProduct = productsResponse.getGeneratedText();
         });
 
         step("Открыть страницу тестового рецепта", () -> {
-            open("/products/" + title + idProduct);
+            open("/products/" + titleProduct.replace(" ", "-")+ "-" + idProduct);
         });
+
+        step("Проверить, что наименования продукта корректно отображается", () -> {
+            $("[itemprop=name]").shouldBe(text(titleProduct));
+        });
+
+        if (generatedTextProduct != null) {
+            step("Проверить, что описание продукта корректно отображается", () -> {
+                $(".summary.panel").shouldBe(text(generatedTextProduct));
+            });
+        }
     }
 }
