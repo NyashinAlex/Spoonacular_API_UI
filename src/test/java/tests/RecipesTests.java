@@ -100,7 +100,7 @@ public class RecipesTests extends BaseTests {
         step("Поиск всех рецептов блюда", () -> {
             allRecipe = given()
                     .spec(recipesRequestSpec)
-                    .header("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394")
+                    .header("x-api-key", xApiKey)
                     .get("/recipes/autocomplete?number=25&query=burger")
                     .then()
                     .spec(recipesResponseSpec)

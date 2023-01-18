@@ -15,13 +15,16 @@ public class BaseTests {
         String browser = System.getProperty("browser", "chrome");
         String browserVersion = System.getProperty("browser_version", "100.0");
         String browserSize = System.getProperty("browser_size", "1920x1080");
-        String remote = System.getProperty("remote", "https://user1:1234@selenoid.autotests.cloud/wd/hub");
+        String remote = System.getProperty("remote");
 
         Configuration.browser = browser;
         Configuration.browserVersion = browserVersion;
         Configuration.browserSize = browserSize;
         Configuration.baseUrl = "https://spoonacular.com";
-        Configuration.remote = remote;
+
+        if (remote != null) {
+            Configuration.remote = remote;
+        }
     }
 
     @AfterEach

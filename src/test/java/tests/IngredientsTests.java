@@ -18,6 +18,7 @@ import static specs.IngredientsSpec.ingredientsResponseSpec;
 public class IngredientsTests {
 
     String xApiKey;
+
     @BeforeEach
     void getApiKey() {
         xApiKey = System.getProperty("x-api-key", "ab4a8b4cc3bf48c6ad8aedf6e8350394");
