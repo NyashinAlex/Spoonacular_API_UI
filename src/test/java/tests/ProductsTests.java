@@ -2,9 +2,9 @@ package tests;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.Products.FoodIngredientsMapRequest;
-import models.Products.FoodIngredientsMapResponse;
-import models.Products.ProductsResponse;
+import models.products.FoodIngredientsMapRequest;
+import models.products.FoodIngredientsMapResponse;
+import models.products.ProductsResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

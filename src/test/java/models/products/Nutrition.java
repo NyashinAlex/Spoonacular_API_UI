@@ -1,4 +1,4 @@
-package models.Products;
+package models.products;
 
 import java.util.ArrayList;
 

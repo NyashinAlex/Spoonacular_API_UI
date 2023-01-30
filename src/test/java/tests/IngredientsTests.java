@@ -1,8 +1,10 @@
 package tests;
 
 import io.qameta.allure.Feature;
-import models.ComputeGlycemicLoad.ComputeGlycemicLoadRequest;
-import models.ComputeGlycemicLoad.ComputeGlycemicLoadResponse;
+import lombok.Getter;
+import lombok.Setter;
+import models.computeGlycemicLoad.ComputeGlycemicLoadRequest;
+import models.computeGlycemicLoad.ComputeGlycemicLoadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

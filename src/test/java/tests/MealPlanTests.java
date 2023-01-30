@@ -2,12 +2,12 @@ package tests;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.ConnectUser.ConnectUserRequest;
-import models.ConnectUser.ConnectUserResponse;
-import models.MealPlan.Ingredient;
-import models.MealPlan.MealPlanRequest;
-import models.MealPlan.MealPlanResponse;
-import models.MealPlan.Value;
+import models.connectUser.ConnectUserRequest;
+import models.connectUser.ConnectUserResponse;
+import models.mealPlan.Ingredient;
+import models.mealPlan.MealPlanRequest;
+import models.mealPlan.MealPlanResponse;
+import models.mealPlan.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

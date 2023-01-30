@@ -1,4 +1,4 @@
-package models.MealPlan;
+package models.mealPlan;
 
 public class MealPlanResponse {
 

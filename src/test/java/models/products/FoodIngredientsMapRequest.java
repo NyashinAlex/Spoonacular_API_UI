@@ -1,13 +1,8 @@
-package models.ComputeGlycemicLoad;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
+package models.products;
 
 import java.util.ArrayList;
 
-//@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ComputeGlycemicLoadRequest {
+public class FoodIngredientsMapRequest {
 
     private ArrayList<String> ingredients;
 

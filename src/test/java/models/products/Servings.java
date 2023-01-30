@@ -1,4 +1,4 @@
-package models.Products;
+package models.products;
 
 public class Servings {
 

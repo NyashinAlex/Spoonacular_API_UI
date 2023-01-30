@@ -1,10 +1,15 @@
-package models.Products;
+package models.computeGlycemicLoad;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
-public class FoodIngredientsMapRequest {
+@Getter
+@Setter
+public class ComputeGlycemicLoadRequest {
 
-    private ArrayList<String> ingredients;
+    public ArrayList<String> ingredients;
 
     public ArrayList<String> getIngredients() {
         return ingredients;

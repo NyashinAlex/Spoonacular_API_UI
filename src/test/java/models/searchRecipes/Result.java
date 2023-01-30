@@ -1,4 +1,4 @@
-package models.SearchRecipes;
+package models.searchRecipes;
 
 public class Result {
 

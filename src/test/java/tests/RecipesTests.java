@@ -6,8 +6,8 @@ import static io.restassured.RestAssured.given;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.GetRecipeInformation.GetRecipeInformationResponseError;
-import models.SearchRecipes.SearchRecipesResponse;
+import models.getRecipeInformation.GetRecipeInformationResponseError;
+import models.searchRecipes.SearchRecipesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

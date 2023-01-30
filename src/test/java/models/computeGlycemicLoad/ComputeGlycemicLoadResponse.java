@@ -1,16 +1,17 @@
-package models.ComputeGlycemicLoad;
+package models.computeGlycemicLoad;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
 public class ComputeGlycemicLoadResponse {
 
-    private String status;
-    private double totalGlycemicLoad;
-    private ArrayList<Ingredient> ingredients;
+    public String status;
+    public double totalGlycemicLoad;
+    public ArrayList<Ingredient> ingredients;
 
     public String getStatus() {
         return status;

@@ -1,4 +1,4 @@
-package models.ComputeGlycemicLoad;
+package models.computeGlycemicLoad;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

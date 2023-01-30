@@ -1,4 +1,4 @@
-package models.ConnectUser;
+package models.connectUser;
 
 public class ConnectUserResponse {
 
