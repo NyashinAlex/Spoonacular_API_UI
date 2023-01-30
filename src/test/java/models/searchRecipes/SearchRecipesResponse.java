@@ -1,9 +1,13 @@
 package models.searchRecipes;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchRecipesResponse {
 
@@ -12,35 +16,4 @@ public class SearchRecipesResponse {
     private int number;
     private int totalResults;
 
-    public ArrayList<Result> getResults() {
-        return results;
-    }
-
-    public void setResults(ArrayList<Result> results) {
-        this.results = results;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public int getTotalResults() {
-        return totalResults;
-    }
-
-    public void setTotalResults(int totalResults) {
-        this.totalResults = totalResults;
-    }
 }

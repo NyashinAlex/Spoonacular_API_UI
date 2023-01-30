@@ -11,11 +11,4 @@ public class ComputeGlycemicLoadRequest {
 
     public ArrayList<String> ingredients;
 
-    public ArrayList<String> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(ArrayList<String> ingredients) {
-        this.ingredients = ingredients;
-    }
 }
