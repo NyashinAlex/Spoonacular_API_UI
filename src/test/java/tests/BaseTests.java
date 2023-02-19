@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 public class BaseTests {
 
     @BeforeAll
-    static void openMainPage() {
+    static void configBrowser() {
 
         String browser = System.getProperty("browser", "chrome");
         String browserVersion = System.getProperty("browser_version", "100.0");
