@@ -14,7 +14,8 @@ public class ProductsMapIngredientsSpec {
     public static RequestSpecification productsMapIngredientsRequestSpec = with()
             .filter(withCustomTemplates())
             .baseUri("https://api.spoonacular.com")
-            .log().all();
+            .log().all()
+            .contentType(JSON);
 
     public static ResponseSpecification productsMapIngredientsResponseSpec = new ResponseSpecBuilder()
             .log(BODY)
