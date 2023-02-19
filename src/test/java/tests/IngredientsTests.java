@@ -1,8 +1,6 @@
 package tests;
 
 import io.qameta.allure.Feature;
-import lombok.Getter;
-import lombok.Setter;
 import models.computeGlycemicLoad.ComputeGlycemicLoadRequest;
 import models.computeGlycemicLoad.ComputeGlycemicLoadResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +12,8 @@ import java.util.ArrayList;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static specs.IngredientsSpec.ingredientsRequestSpec;
-import static specs.IngredientsSpec.ingredientsResponseSpec;
+import static specs.Spec.requestSpec;
+import static specs.Spec.responseSpec;
 
 public class IngredientsTests {
 
@@ -42,12 +40,12 @@ public class IngredientsTests {
 
         step("Отправляем запрос с 3 продуктами на проверку гликемической нагрузки", () -> {
             ComputeGlycemicLoadResponse computeGlycemicLoadResponse = given()
-                    .spec(ingredientsRequestSpec)
+                    .spec(requestSpec)
                     .body(body)
                     .header("x-api-key", xApiKey)
                     .post("/food/ingredients/glycemicLoad")
                     .then()
-                    .spec(ingredientsResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(ComputeGlycemicLoadResponse.class);
 
             step("Проверяем, что запрос успешен и отображается общая сумма гликемической нагрузки", () -> {

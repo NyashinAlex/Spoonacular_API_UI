@@ -9,17 +9,23 @@ import static io.restassured.RestAssured.with;
 import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.http.ContentType.JSON;
 
-public class IngredientsSpec {
+public class Spec {
 
-    public static RequestSpecification ingredientsRequestSpec = with()
+    public static RequestSpecification requestSpec = with()
             .filter(withCustomTemplates())
             .baseUri("https://api.spoonacular.com")
             .log().all()
             .contentType(JSON);
 
-    public static ResponseSpecification ingredientsResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification responseSpec = new ResponseSpecBuilder()
             .log(BODY)
             .expectStatusCode(200)
+            .expectContentType(JSON)
+            .build();
+
+    public static ResponseSpecification responseError404Spec = new ResponseSpecBuilder()
+            .log(BODY)
+            .expectStatusCode(404)
             .expectContentType(JSON)
             .build();
 }
