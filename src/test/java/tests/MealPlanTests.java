@@ -2,12 +2,12 @@ package tests;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.ConnectUser.ConnectUserRequest;
-import models.ConnectUser.ConnectUserResponse;
-import models.MealPlan.Ingredient;
-import models.MealPlan.MealPlanRequest;
-import models.MealPlan.MealPlanResponse;
-import models.MealPlan.Value;
+import models.connectUser.ConnectUserRequest;
+import models.connectUser.ConnectUserResponse;
+import models.mealPlan.Ingredient;
+import models.mealPlan.MealPlanRequest;
+import models.mealPlan.MealPlanResponse;
+import models.mealPlan.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static specs.MealPlanSpec.mealPlanRequestSpec;
-import static specs.MealPlanSpec.mealPlanResponseSpec;
+import static specs.Spec.requestSpec;
+import static specs.Spec.responseSpec;
 
 public class MealPlanTests {
 
@@ -51,12 +51,12 @@ public class MealPlanTests {
             connectUserRequest.setEmail(faker.internet().emailAddress());
 
             connectUserResponse = given()
-                    .spec(mealPlanRequestSpec)
+                    .spec(requestSpec)
                     .body(connectUserRequest)
                     .header("x-api-key", xApiKey)
                     .post("/users/connect")
                     .then()
-                    .spec(mealPlanResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(ConnectUserResponse.class);
         });
 
@@ -73,24 +73,24 @@ public class MealPlanTests {
             mealPlanRequest.setValue(value);
 
             mealPlanResponse = given()
-                    .spec(mealPlanRequestSpec)
+                    .spec(requestSpec)
                     .body(mealPlanRequest)
                     .header("x-api-key", xApiKey)
                     .post("/mealplanner/" + connectUserResponse.getUsername() + "/items?hash=" + connectUserResponse.getHash())
                     .then()
-                    .spec(mealPlanResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(MealPlanResponse.class);
         });
 
         step("Удаление плана питания для тестового пользователя", () -> {
 
             String status = given()
-                    .spec(mealPlanRequestSpec)
+                    .spec(requestSpec)
                     .when()
                     .header("x-api-key", xApiKey)
                     .delete("/mealplanner/"+ connectUserResponse.getUsername() + "/items/"+ mealPlanResponse.getId()+ "?hash="  + connectUserResponse.getHash())
                     .then()
-                    .spec(mealPlanResponseSpec)
+                    .spec(responseSpec)
                     .extract().path("status");
 
             assertThat(status).isEqualTo("success");

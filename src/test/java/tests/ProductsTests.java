@@ -2,27 +2,23 @@ package tests;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.Products.FoodIngredientsMapRequest;
-import models.Products.FoodIngredientsMapResponse;
-import models.Products.ProductsResponse;
+import models.products.FoodIngredientsMapRequest;
+import models.products.FoodIngredientsMapResponse;
+import models.products.ProductsResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static jdk.javadoc.internal.doclets.toolkit.util.Utils.toLowerCase;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static specs.ProductsMapIngredientsSpec.productsMapIngredientsRequestSpec;
-import static specs.ProductsMapIngredientsSpec.productsMapIngredientsResponseSpec;
-import static specs.ProductsSpec.productsRequestSpec;
-import static specs.ProductsSpec.productsResponseSpec;
+import static specs.Spec.requestSpec;
+import static specs.Spec.responseSpec;
 
 public class ProductsTests extends BaseTests {
 
@@ -43,11 +39,11 @@ public class ProductsTests extends BaseTests {
 
         step("Получение рандомного продукта через API", () -> {
             ProductsResponse productsResponse = given()
-                    .spec(productsRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .get("/food/products/" + faker.number().numberBetween(20000, 300000))
                     .then()
-                    .spec(productsResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(ProductsResponse.class);
 
             idProduct = productsResponse.getId();
@@ -86,12 +82,12 @@ public class ProductsTests extends BaseTests {
         step("Получить все продукты, в названии которых есть Egg", () -> {
             open();
             FoodIngredientsMapResponse[] foodIngredientsMapResponses = given()
-                    .spec(productsMapIngredientsRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .body(foodIngredientsMapRequest)
                     .post("/food/ingredients/map")
                     .then()
-                    .spec(productsMapIngredientsResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(FoodIngredientsMapResponse[].class);
 
             //Сохранее всех наименование продуктов из тело ответа в массив

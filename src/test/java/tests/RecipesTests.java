@@ -6,8 +6,8 @@ import static io.restassured.RestAssured.given;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Feature;
-import models.GetRecipeInformation.GetRecipeInformationResponseError;
-import models.SearchRecipes.SearchRecipesResponse;
+import models.getRecipeInformation.GetRecipeInformationResponseError;
+import models.searchRecipes.SearchRecipesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
-import static specs.RecipesSpec.*;
+import static specs.Spec.*;
 
 public class RecipesTests extends BaseTests {
 
@@ -37,11 +37,11 @@ public class RecipesTests extends BaseTests {
 
         step("Получение рандомного рецепта (номер={idRecipe} и название={titleRecipe})", () -> {
             SearchRecipesResponse searchRecipesResponse = given()
-                    .spec(recipesRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .get("/recipes/complexSearch?number=1&offset=" + faker.number().numberBetween(1, 5000))
                     .then()
-                    .spec(recipesResponseSpec)
+                    .spec(responseSpec)
                     .extract().as(SearchRecipesResponse.class);
 
             idRecipe = searchRecipesResponse.getResults().get(0).getId();
@@ -50,11 +50,11 @@ public class RecipesTests extends BaseTests {
 
         step("Получение описание рандомного рецепта", () -> {
             ArrayList<String> description = given()
-                    .spec(recipesRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .get("/recipes/informationBulk?ids=" + idRecipe)
                     .then()
-                    .spec(recipesResponseSpec)
+                    .spec(responseSpec)
                     .extract().path("summary");
 
             descriptionRecipe = description.get(0).replaceAll("[\\'</b>']", "");
@@ -75,11 +75,11 @@ public class RecipesTests extends BaseTests {
 
         step("Проверяем, что id рецепта = {idRecipeError} действительно не существует", () -> {
             GetRecipeInformationResponseError getRecipeInformationResponseError = given()
-                    .spec(recipesRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .get("/recipes/" + idRecipeError + "/information")
                     .then()
-                    .spec(recipesResponseErrorSpec)
+                    .spec(responseError404Spec)
                     .extract().as(GetRecipeInformationResponseError.class);
         });
 
@@ -99,11 +99,11 @@ public class RecipesTests extends BaseTests {
 
         step("Поиск всех рецептов блюда", () -> {
             allRecipe = given()
-                    .spec(recipesRequestSpec)
+                    .spec(requestSpec)
                     .header("x-api-key", xApiKey)
                     .get("/recipes/autocomplete?number=25&query=burger")
                     .then()
-                    .spec(recipesResponseSpec)
+                    .spec(responseSpec)
                     .extract().path("title");
         });
 
