@@ -13,7 +13,7 @@ public class BaseTests {
     static void openMainPage() {
 
         String browser = System.getProperty("browser", "chrome");
-        String browserVersion = System.getProperty("browser_version", "100.0");
+        String browserVersion = System.getProperty("browser_version", "103.0");
         String browserSize = System.getProperty("browser_size", "1920x1080");
         String remote = System.getProperty("remote");
 
