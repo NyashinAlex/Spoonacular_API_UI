@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
 
 import com.github.javafaker.Faker;
+import helpers.RandomData;
 import io.qameta.allure.Feature;
 import models.getRecipeInformation.GetRecipeInformationResponseError;
 import models.searchRecipes.SearchRecipesResponse;
@@ -15,13 +16,15 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static specs.Spec.*;
 
 public class RecipesTests extends BaseTests {
 
     Faker faker = new Faker();
+    RandomData randomData = new RandomData();
 
-    int idRecipe, idRecipeError = 333333333;
+    int idRecipe, idRecipeError = 333333333, totalResults;
     String titleRecipe, descriptionRecipe, xApiKey;
     ArrayList<String> allRecipe;
 
@@ -94,7 +97,7 @@ public class RecipesTests extends BaseTests {
 
     @Test
     @Feature("Поиск рецептов")
-    @DisplayName("Поиск всех рецептов блюда")
+    @DisplayName("Поиск всех рецептов блюда по наименованию (query)")
     void searchAllRecipe() {
 
         step("Поиск всех рецептов блюда", () -> {
@@ -111,6 +114,59 @@ public class RecipesTests extends BaseTests {
             open("/recipes");
             $(".input__field.input__field--makiko").click();
             $(".input__field.input__field--makiko").setValue("burger").pressEnter();
+
+            for (String recipe : allRecipe) {
+                $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
+                        .findBy(text(recipe));
+            }
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Неуспешный поиск всех рецептов блюда по наименованию (query)")
+    void unsuccessfulSearchAllRecipe() {
+
+        step("Неуспешный поиск всех рецептов блюда по наименованию (query)", () -> {
+            totalResults = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?query=Notpasta")
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("totalResults");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            assertThat(totalResults).isEqualTo(0);
+        });
+
+        step("", () -> {
+            open();
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Поиск всех рецептов блюда по стране или континенту")
+    void searchAllRecipeByCuisine() {
+
+        String randomCuisine = randomData.randomCuisine();
+
+        step("Поиск всех рецептов блюда по рандомной стране или континенту", () -> {
+            allRecipe = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?cuisine=" + randomCuisine)
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("results.title");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            open("/recipes");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue(randomCuisine).pressEnter();
 
             for (String recipe : allRecipe) {
                 $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
