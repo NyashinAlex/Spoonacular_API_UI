@@ -17,4 +17,15 @@ public class RandomData {
 
         return cuisine[rand.nextInt((max - min) + 1) + min];
     }
+
+    public String randomDiet() {
+        Random rand = new Random();
+        int min = 0;
+        int max = 11;
+
+        String[] diet = {"Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian", "Ovo-Vegetarian",
+                "Vegan", "Pescetarian", "Paleo", "Primal", "Low FODMAP", "Whole30"};
+
+        return diet[rand.nextInt((max - min) + 1) + min];
+    }
 }
