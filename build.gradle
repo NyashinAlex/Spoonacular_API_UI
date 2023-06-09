@@ -16,7 +16,7 @@ compileTestJava{
 }
 
 def allureVersion = "2.22.1",
-    selenideVersion = "6.9.0",
+    selenideVersion = "6.15.0",
     junitVersion = "5.8.2"
 
 
