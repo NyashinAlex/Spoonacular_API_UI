@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
 
 import com.github.javafaker.Faker;
+import helpers.RandomData;
 import io.qameta.allure.Feature;
 import models.getRecipeInformation.GetRecipeInformationResponseError;
 import models.searchRecipes.SearchRecipesResponse;
@@ -15,13 +16,15 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static io.qameta.allure.Allure.step;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static specs.Spec.*;
 
 public class RecipesTests extends BaseTests {
 
     Faker faker = new Faker();
+    RandomData randomData = new RandomData();
 
-    int idRecipe, idRecipeError = 333333333;
+    int idRecipe, idRecipeError = 333333333, totalResults;
     String titleRecipe, descriptionRecipe, xApiKey;
     ArrayList<String> allRecipe;
 
@@ -94,7 +97,7 @@ public class RecipesTests extends BaseTests {
 
     @Test
     @Feature("Поиск рецептов")
-    @DisplayName("Поиск всех рецептов блюда")
+    @DisplayName("Поиск всех рецептов блюда по наименованию (query)")
     void searchAllRecipe() {
 
         step("Поиск всех рецептов блюда", () -> {
@@ -116,6 +119,141 @@ public class RecipesTests extends BaseTests {
                 $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
                         .findBy(text(recipe));
             }
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Неуспешный поиск всех рецептов блюда по наименованию (query)")
+    void unsuccessfulSearchAllRecipe() {
+
+        step("Неуспешный поиск всех рецептов блюда по наименованию (query)", () -> {
+            totalResults = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?query=Notpasta")
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("totalResults");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            assertThat(totalResults).isEqualTo(0);
+        });
+
+        step("", () -> {
+            open();
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Поиск всех рецептов блюда по стране или континенту")
+    void searchAllRecipeByCuisine() {
+
+        String randomCuisine = randomData.randomCuisine();
+
+        step("Поиск всех рецептов блюда по рандомной стране или континенту", () -> {
+            allRecipe = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?cuisine=" + randomCuisine)
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("results.title");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            open("/recipes");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue(randomCuisine).pressEnter();
+
+            for (String recipe : allRecipe) {
+                $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
+                        .findBy(text(recipe));
+            }
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Неуспешный поиск всех рецептов блюда по стране или континенту")
+    void unsuccessfulSearchAllRecipeByCuisine() {
+
+        step("Выполнить поиск всех рецептов блюда по некоррктной стране или континенту", () -> {
+            int totalResults = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?cuisine=Russia222222222222sdsadsadsad")
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("totalResults");
+
+            assertThat(totalResults).isEqualTo(0);
+        });
+
+        step("Проверить на сайте, что поиск неуспешен", () -> {
+            open("/recipes");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue("Russia222222222222sdsadsadsad").pressEnter();
+
+            $("#ss360-search-result-heading").shouldBe(text("Found 0 search results for \"Russia222222222222sdsadsadsad\""));
+            $("#ss360-no-results").shouldBe(text("Sorry, we have not found any matches for your query."));
+        });
+    }
+
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Поиск всех рецептов блюда по диете")
+    void searchAllRecipeByDiet() {
+
+        String randomDiet = randomData.randomDiet();
+
+        step("Поиск всех рецептов блюда по рандомной диете", () -> {
+            allRecipe = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?diet=" + randomDiet)
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("results.title");
+        });
+
+        step("Проверка наличия всех рецептов на сайте", () -> {
+            open("/recipes");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue(randomDiet).pressEnter();
+
+            for (String recipe : allRecipe) {
+                $$(".ss360-n-section.ss360-group.ss360-group-recipes.ss360-group--active .ss360-n-section.ss360-suggests__header")
+                        .findBy(text(recipe));
+            }
+        });
+    }
+    @Test
+    @Feature("Поиск рецептов")
+    @DisplayName("Неуспешный поиск всех рецептов блюда по диете")
+    void unsuccessfulSearchAllRecipeByDiet() {
+
+        step("Выполнить поиск всех рецептов блюда по некоррктной диете", () -> {
+            int totalResults = given()
+                    .spec(requestSpec)
+                    .header("x-api-key", xApiKey)
+                    .get("/recipes/complexSearch?diet=Russia222222222222sdsadsadsad")
+                    .then()
+                    .spec(responseSpec)
+                    .extract().path("totalResults");
+
+            assertThat(totalResults).isEqualTo(0);
+        });
+
+        step("Проверить на сайте, что поиск неуспешен", () -> {
+            open("/recipes");
+            $(".input__field.input__field--makiko").click();
+            $(".input__field.input__field--makiko").setValue("Russia222222222222sdsadsadsad").pressEnter();
+
+            $("#ss360-search-result-heading").shouldBe(text("Found 0 search results for \"Russia222222222222sdsadsadsad\""));
+            $("#ss360-no-results").shouldBe(text("Sorry, we have not found any matches for your query."));
         });
     }
 }
